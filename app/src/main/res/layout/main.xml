@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+<TextView android:layout_height="wrap_content" android:textAppearance="?android:attr/textAppearanceLarge" android:layout_width="wrap_content" android:id="@+id/serverTimeLabel" android:text="@string/time_on_server"></TextView>
+<CheckedTextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/serverTimeField" android:text="@string/init_time_string"></CheckedTextView>
+<Button android:layout_height="wrap_content" android:text="@string/connect_and_read" android:id="@+id/connectAndReadButton" android:layout_width="wrap_content"></Button>
+</LinearLayout>
