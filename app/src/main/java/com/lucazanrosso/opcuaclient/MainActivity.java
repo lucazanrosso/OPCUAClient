@@ -19,6 +19,7 @@ import org.opcfoundation.ua.core.BrowseDirection;
 import org.opcfoundation.ua.core.BrowseResponse;
 import org.opcfoundation.ua.core.EndpointDescription;
 import org.opcfoundation.ua.core.Identifiers;
+import org.opcfoundation.ua.core.MessageSecurityMode;
 import org.opcfoundation.ua.core.ReadRequest;
 import org.opcfoundation.ua.core.ReadResponse;
 import org.opcfoundation.ua.core.ReadValueId;
@@ -26,6 +27,7 @@ import org.opcfoundation.ua.core.TimestampsToReturn;
 import org.opcfoundation.ua.core.WriteValue;
 import org.opcfoundation.ua.transport.ServiceChannel;
 import org.opcfoundation.ua.transport.security.KeyPair;
+import org.opcfoundation.ua.transport.security.SecurityPolicy;
 import org.opcfoundation.ua.utils.CertificateUtils;
 import org.opcfoundation.ua.utils.EndpointUtil;
 
@@ -44,32 +46,35 @@ public class MainActivity extends AppCompatActivity {
         new  Connect().execute(null, null, null);
     }
 
-    private static class Connect extends AsyncTask<String, String, String> {
+    private class Connect extends AsyncTask<String, String, String> {
 
         @Override
         protected String doInBackground(String... params) {
 
             try {
                 ////////////// CLIENT //////////////
-                Application myClientApplication = new Application();
-                // Load Client's Application Instance Certificate from file
-                KeyPair myClientApplicationInstanceCertificate = null;
-
-                // Create Client Application Instance Certificate
-                {
-                    String certificateCommonName = "UA Sample Client";
-                    System.out.println("Generating new Certificate for Client using CN: " + certificateCommonName);
-                    String applicationUri = myClientApplication.getApplicationUri();
-                    String organisation = "Sample Organisation";
-                    int validityTime = 365;
-                    myClientApplicationInstanceCertificate = CertificateUtils
-                            .createApplicationInstanceCertificate(certificateCommonName, organisation, applicationUri, validityTime);
-                }
-
-                // Create Client
-                Client myClient = new Client(myClientApplication);
-                myClientApplication.addApplicationInstanceCertificate(myClientApplicationInstanceCertificate);
+//                Application myClientApplication = new Application();
+//                // Load Client's Application Instance Certificate from file
+//                KeyPair myClientApplicationInstanceCertificate = null;
+//
+//                // Create Client Application Instance Certificate
+//                {
+//                    String certificateCommonName = "UA Sample Client";
+//                    System.out.println("Generating new Certificate for Client using CN: " + certificateCommonName);
+//                    String applicationUri = myClientApplication.getApplicationUri();
+//                    String organisation = "Sample Organisation";
+//                    int validityTime = 365;
+//                    myClientApplicationInstanceCertificate = CertificateUtils
+//                            .createApplicationInstanceCertificate(certificateCommonName, organisation, applicationUri, validityTime);
+//                }
+//
+//                // Create Client
+//                Client myClient = new Client(myClientApplication);
+//                myClientApplication.addApplicationInstanceCertificate(myClientApplicationInstanceCertificate);
                 //////////////////////////////////////
+
+                KeyPair myClientApplicationInstanceCertificate = ExampleKeys.getCert(getApplicationContext(),"Client");
+                Client myClient = Client.createClientApplication(myClientApplicationInstanceCertificate);
 
                 /////////// DISCOVER ENDPOINT ////////
                 // Discover server's endpoints, and choose one
@@ -78,14 +83,16 @@ public class MainActivity extends AppCompatActivity {
                 // Filter out all but opc.tcp protocol endpoints
                 endpoints = EndpointUtil.selectByProtocol(endpoints, "opc.tcp");
                 // Filter out all but Signed & Encrypted endpoints
-//                endpoints = EndpointUtil.selectByMessageSecurityMode(endpoints, MessageSecurityMode.SignAndEncrypt);
+                endpoints = EndpointUtil.selectByMessageSecurityMode(endpoints, MessageSecurityMode.SignAndEncrypt);
 //                // Filter out all but Basic128 cryption endpoints
-//                endpoints = EndpointUtil.selectBySecurityPolicy(endpoints, SecurityPolicy.BASIC128RSA15);
+                endpoints = EndpointUtil.selectBySecurityPolicy(endpoints, SecurityPolicy.BASIC256SHA256);
                 // Sort endpoints by security level. The lowest level at the beginning, the highest at the end
                 // of the array
                 endpoints = EndpointUtil.sortBySecurityLevel(endpoints);
                 // Choose one endpoint
-                EndpointDescription endpoint = endpoints[0];
+                EndpointDescription endpoint = endpoints[endpoints.length - 1];
+                System.out.println("Security Level " + endpoint.getSecurityPolicyUri());
+                System.out.println("Security Mode " + endpoint.getSecurityMode());
                 //////////////////////////////////////
 
                 SessionChannel mySession = myClient.createSessionChannel(endpoint);
