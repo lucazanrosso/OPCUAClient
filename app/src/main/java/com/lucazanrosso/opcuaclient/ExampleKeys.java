@@ -17,6 +17,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import org.opcfoundation.ua.common.ServiceResultException;
+import org.opcfoundation.ua.core.ApplicationDescription;
 import org.opcfoundation.ua.transport.security.Cert;
 import org.opcfoundation.ua.transport.security.KeyPair;
 import org.opcfoundation.ua.transport.security.PrivKey;
@@ -31,9 +32,13 @@ public class ExampleKeys {
      * @return the KeyPair composed of the certificate and private key
      * @throws ServiceResultException
      */
-    public static KeyPair getCert(Context context, String applicationName)
+    public static KeyPair getCert(Context context, ApplicationDescription applicationDescription)
             throws ServiceResultException
     {
+        String applicationName = applicationDescription.getApplicationName().getText();
+        String applicationUri = applicationDescription.getProductUri();
+        System.out.println(applicationName);
+
         File certFile = new File(context.getFilesDir(),applicationName + ".der");
         File privKeyFile =  new File(context.getFilesDir(),applicationName+ ".pem");
         System.out.println("AAAAAAAAAAAA" + certFile.length());
@@ -49,7 +54,7 @@ public class ExampleKeys {
         } catch (IOException e) {
             try {
                 String hostName = InetAddress.getLocalHost().getHostName();
-                String applicationUri = "urn:"+hostName+":"+applicationName;
+//                String applicationUri = "urn:"+hostName+":"+applicationName;
                 System.out.println("AAAAAAAAAAAAAAAAAAA" + applicationUri);
                 KeyPair keys = CertificateUtils.createApplicationInstanceCertificate(applicationName, null, applicationUri, 3650, hostName);
                 keys.getCertificate().save(certFile);
