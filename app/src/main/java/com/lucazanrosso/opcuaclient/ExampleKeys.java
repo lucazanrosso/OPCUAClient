@@ -30,32 +30,24 @@ public class ExampleKeys {
     /**
      * Load file certificate and private key from applicationName.der & .pfx - or create ones if they do not exist
      * @return the KeyPair composed of the certificate and private key
-     * @throws ServiceResultException
      */
     public static KeyPair getCert(Context context, ApplicationDescription applicationDescription)
             throws ServiceResultException
     {
         String applicationName = applicationDescription.getApplicationName().getText();
         String applicationUri = applicationDescription.getProductUri();
-        System.out.println(applicationName);
 
         File certFile = new File(context.getFilesDir(),applicationName + ".der");
         File privKeyFile =  new File(context.getFilesDir(),applicationName+ ".pem");
-        System.out.println("AAAAAAAAAAAA" + certFile.length());
-        System.out.println("AAAAAAAAAAAA" + privKeyFile.length());
         try {
             Cert myCertificate = Cert.load( certFile );
             PrivKey myPrivateKey = PrivKey.load( privKeyFile, PRIVKEY_PASSWORD );
-            System.out.println("AAAAAAAAAAAA" + certFile.length());
-            System.out.println("AAAAAAAAAAAA" + privKeyFile.length());
             return new KeyPair(myCertificate, myPrivateKey);
         } catch (CertificateException e) {
             throw new ServiceResultException( e );
         } catch (IOException e) {
             try {
                 String hostName = InetAddress.getLocalHost().getHostName();
-//                String applicationUri = "urn:"+hostName+":"+applicationName;
-                System.out.println("AAAAAAAAAAAAAAAAAAA" + applicationUri);
                 KeyPair keys = CertificateUtils.createApplicationInstanceCertificate(applicationName, null, applicationUri, 3650, hostName);
                 keys.getCertificate().save(certFile);
                 keys.getPrivateKey().save(privKeyFile);
