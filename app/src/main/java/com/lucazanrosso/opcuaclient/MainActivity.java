@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         textView = findViewById(R.id.text_view);
         Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
-
     }
 
     public void connect(View view) {
@@ -66,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
 
                 // Create Client
                 Client myClient = Client.createClientApplication(myClientApplicationInstanceCertificate);
-                System.out.println("Application URI " + myClient.getApplication().getApplicationUri());
                 //////////////////////////////////////
 
 
@@ -108,12 +106,7 @@ public class MainActivity extends AppCompatActivity {
 
                 // Show the result in a TextView
                 final DataValue[] dataValue = res.getResults();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        textView.setText(dataValue[0].getValue().toString());
-                    }
-                });
+                String result = dataValue[0].getValue().toString();
 
                 // Write a variable. In this case the same varieable read is set to 0
                 WriteValue writeValue = new WriteValue(nodeId, Attributes.Value, null, new DataValue(new Variant(0)));
@@ -124,17 +117,18 @@ public class MainActivity extends AppCompatActivity {
                 mySession.closeAsync();
                 //////////////////////////////////////
 
+                return result;
+
             } catch (Exception e) {
                 e.printStackTrace();
+                return "Connection failed";
             }
-
-            return "Connecting...";
         }
 
 
         @Override
         protected void onPostExecute(String result) {
-
+            textView.setText(result);
         }
 
 
