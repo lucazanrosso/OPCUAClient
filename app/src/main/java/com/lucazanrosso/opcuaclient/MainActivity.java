@@ -9,6 +9,7 @@ import android.widget.TextView;
 import java.security.Security;
 import java.util.Locale;
 
+import org.opcfoundation.ua.application.Application;
 import org.opcfoundation.ua.application.Client;
 import org.opcfoundation.ua.application.SessionChannel;
 import org.opcfoundation.ua.builtintypes.DataValue;
@@ -26,11 +27,17 @@ import org.opcfoundation.ua.core.TimestampsToReturn;
 import org.opcfoundation.ua.core.WriteValue;
 import org.opcfoundation.ua.transport.security.KeyPair;
 import org.opcfoundation.ua.transport.security.SecurityPolicy;
+import org.opcfoundation.ua.utils.CertificateUtils;
 import org.opcfoundation.ua.utils.EndpointUtil;
 
 public class MainActivity extends AppCompatActivity {
 
     TextView textView;
+
+    // Bouncy Castle encryption
+    static {
+        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textView = findViewById(R.id.text_view);
-        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
     }
 
     public void connect(View view) {
@@ -51,6 +57,25 @@ public class MainActivity extends AppCompatActivity {
         protected String doInBackground(String... params) {
 
             try {
+
+                ////////////// CLIENT //////////////
+//                Application myClientApplication = new Application();
+//
+//                // Create Client Application Instance Certificate
+//                KeyPair myClientApplicationInstanceCertificate;
+//                String certificateCommonName = "UA Sample Client";
+//                System.out.println("Generating new Certificate for Client using CN: " + certificateCommonName);
+//                String applicationUri = myClientApplication.getApplicationUri();
+//                String organisation = "Sample Organisation";
+//                int validityTime = 3650;
+//                myClientApplicationInstanceCertificate = CertificateUtils
+//                        .createApplicationInstanceCertificate(certificateCommonName, organisation, applicationUri, validityTime);
+//
+//                // Create Client
+//                Client myClient = new Client(myClientApplication);
+//                myClientApplication.addApplicationInstanceCertificate(myClientApplicationInstanceCertificate);
+                //////////////////////////////////////
+
 
                 /////////////// CLIENT ///////////////
                 // Create ApplicationDescription
@@ -78,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                 // Filter out all but Signed & Encrypted endpoints
                 endpoints = EndpointUtil.selectByMessageSecurityMode(endpoints, MessageSecurityMode.SignAndEncrypt);
 
-                // Filter out all but Basic128 cryption endpoints
+                // Filter out all but Basic256Sha256 cryption endpoints
                 endpoints = EndpointUtil.selectBySecurityPolicy(endpoints, SecurityPolicy.BASIC256SHA256);
 
                 // Sort endpoints by security level. The lowest level at the beginning, the highest at the end of the array
@@ -103,12 +128,10 @@ public class MainActivity extends AppCompatActivity {
                 NodeId nodeId = new NodeId(5, "Counter1");
                 ReadValueId readValueId = new ReadValueId(nodeId, Attributes.Value, null, null);
                 ReadResponse res = mySession.Read(null, 500.0, TimestampsToReturn.Source, readValueId);
-
-                // Show the result in a TextView
-                final DataValue[] dataValue = res.getResults();
+                DataValue[] dataValue = res.getResults();
                 String result = dataValue[0].getValue().toString();
 
-                // Write a variable. In this case the same varieable read is set to 0
+                // Write a variable. In this case the same variable read is set to 0
                 WriteValue writeValue = new WriteValue(nodeId, Attributes.Value, null, new DataValue(new Variant(0)));
                 mySession.Write(null, writeValue);
 

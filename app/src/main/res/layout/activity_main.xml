@@ -17,6 +17,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
+
     <android.support.v7.widget.AppCompatButton
         android:id="@+id/button_read"
         android:layout_width="wrap_content"
@@ -26,7 +27,7 @@
         android:textColor="@android:color/white"
         app:backgroundTint="@color/colorAccent"
         app:layout_constraintTop_toBottomOf="@id/text_view"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintLeft_toRightOf="parent"
         app:layout_constraintRight_toLeftOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
