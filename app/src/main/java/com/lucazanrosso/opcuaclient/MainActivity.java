@@ -9,7 +9,6 @@ import android.widget.TextView;
 import java.security.Security;
 import java.util.Locale;
 
-import org.opcfoundation.ua.application.Application;
 import org.opcfoundation.ua.application.Client;
 import org.opcfoundation.ua.application.SessionChannel;
 import org.opcfoundation.ua.builtintypes.DataValue;
@@ -27,7 +26,6 @@ import org.opcfoundation.ua.core.TimestampsToReturn;
 import org.opcfoundation.ua.core.WriteValue;
 import org.opcfoundation.ua.transport.security.KeyPair;
 import org.opcfoundation.ua.transport.security.SecurityPolicy;
-import org.opcfoundation.ua.utils.CertificateUtils;
 import org.opcfoundation.ua.utils.EndpointUtil;
 
 public class MainActivity extends AppCompatActivity {
@@ -86,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                 applicationDescription.setApplicationType(ApplicationType.Client);
 
                 // Create Client Application Instance Certificate
-                KeyPair myClientApplicationInstanceCertificate = ExampleKeys.getCert(getApplicationContext(),applicationDescription);
+                KeyPair myClientApplicationInstanceCertificate = ExampleKeys.getCert(getApplicationContext(), applicationDescription);
 
                 // Create Client
                 Client myClient = Client.createClientApplication(myClientApplicationInstanceCertificate);
@@ -95,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
                 /////////// DISCOVER ENDPOINT ////////
                 // Discover endpoints
-                EndpointDescription[] endpoints = myClient.discoverEndpoints("opc.tcp://DESKTOP-EGB7B8G.homenet.telecomitalia.it:53530/OPCUA/SimulationServer");
+                EndpointDescription[] endpoints = myClient.discoverEndpoints("opc.tcp://xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 
                 // Filter out all but opc.tcp protocol endpoints
                 endpoints = EndpointUtil.selectByProtocol(endpoints, "opc.tcp");
@@ -122,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 SessionChannel mySession = myClient.createSessionChannel(endpoint);
 
                 // Activate the session. Use mySession.activate() if you do not want to use user authentication
-                mySession.activate("Luca", "lukesky");
+                mySession.activate("xxxxxxxxxx", "xxxxxxxxxx");
 
                 // Read a variable
                 NodeId nodeId = new NodeId(5, "Counter1");
